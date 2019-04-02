@@ -1,17 +1,17 @@
 import numpy as np
 import matplotlib.pyplot as mpl
 
-a=5
-b=8
-n=4
-h=(b-a)/n
+xi=0
+xf=1
+n=20
+h=(xf-xi)/n
 tol=10**(-5)
 
-yp=[-0.00026538]
-ys=0.0038731
+yp=[1]
+ys=0
 y=[]
-ye=0.0030770
-x=np.arange(a,b+h,h)
+ye=1
+x=np.arange(xi,xf+h,h)
 print('x=', x)
 print("")
 
@@ -58,7 +58,7 @@ j=0
 k=0
 
 while j==0:
-    print("y'=",yp[j])
+    print("y'=",yp)
     v1=[]
     v2=[]
     v1.append(ys)
