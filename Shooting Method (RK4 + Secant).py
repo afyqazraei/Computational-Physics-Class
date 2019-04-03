@@ -18,41 +18,41 @@ print("")
 #######################################################################
 #RK4
 
-def f1(x,y1,y2):
+def f(x,y1,y2):
     return y2
 
-def f2(x,y1,y2):
-    return -y2/x+y1/x**2
+def g(x,y1,y2):
+    return -((np.pi)**2)*(y+1)/4
     
-def k11(x,y1,y2):
-    return f1(x,y1,y2)
+def k1(x,y1,y2):
+    return f(x,y1,y2)
 
-def k12(x,y1,y2):
-    return f2(x,y1,y2)
+def l1(x,y1,y2):
+    return g(x,y1,y2)
 
-def k21(x,y1,y2,h):
-    return f1(x+h/2,y1+h*k11(x,y1,y2)/2,y2+h*k12(x,y1,y2)/2)
+def k2(x,y1,y2,h):
+    return f(x+h/2,y1+h*k1(x,y1,y2)/2,y2+h*l1(x,y1,y2)/2)
 
-def k22(x,y1,y2,h):
-    return f2(x+h/2,y1+h*k11(x,y1,y2)/2,y2+h*k12(x,y1,y2)/2)
+def l2(x,y1,y2,h):
+    return g(x+h/2,y1+h*k1(x,y1,y2)/2,y2+h*l1(x,y1,y2)/2)
 
-def k31(x,y1,y2,h):
-    return f1(x+h/2,y1+h*k21(x,y1,y2,h),y2+h*k22(x,y1,y2,h)/2)
+def k3(x,y1,y2,h):
+    return f(x+h/2,y1+h*k2(x,y1,y2,h)/2,y2+h*l2(x,y1,y2,h)/2)
 
-def k32(x,y1,y2,h):
-    return f2(x+h/2,y1+h*k21(x,y1,y2,h),y2+h*k22(x,y1,y2,h)/2)
+def l3(x,y1,y2,h):
+    return g(x+h/2,y1+h*k2(x,y1,y2,h)/2,y2+h*l2(x,y1,y2,h)/2)
 
-def k41(x,y1,y2,h):
-    return f1(x+h,y1+h*k31(x,y1,y2,h),y2+h*k32(x,y1,y2,h))
+def k4(x,y1,y2,h):
+    return f(x+h,y1+h*k3(x,y1,y2,h),y2+h*l3(x,y1,y2,h))
 
-def k42(x,y1,y2,h):
-    return f2(x+h,y1+h*k31(x,y1,y2,h),y2+h*k32(x,y1,y2,h))
+def l4(x,y1,y2,h):
+    return g(x+h,y1+h*k3(x,y1,y2,h),y2+h*l3(x,y1,y2,h))
 
 def rk41(x,y1,y2,h):
-    return y1+(1/6)*(k11(x,y1,y2)+2*k21(x,y1,y2,h)+2*k31(x,y1,y2,h)+k41(x,y1,y2,h))
+    return y1+(h/6)*(k1(x,y1,y2)+2*k2(x,y1,y2,h)+2*k3(x,y1,y2,h)+k4(x,y1,y2,h))
 
 def rk42(x,y1,y2,h):
-    return y2+(1/6)*(k12(x,y1,y2)+2*k22(x,y1,y2,h)+2*k32(x,y1,y2,h)+k42(x,y1,y2,h))
+    return y2+(h/6)*(l1(x,y1,y2)+2*l2(x,y1,y2,h)+2*l3(x,y1,y2,h)+l4(x,y1,y2,h))
 
 j=0
 k=0
