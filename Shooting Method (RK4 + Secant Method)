@@ -8,29 +8,35 @@ Created on Wed Apr  3 16:12:29 2019
 import numpy as np
 import matplotlib.pyplot as mpl
 
-xi=0
-xf=1
-n=20
-h=(xf-xi)/n
-tol=10**(-5)
+x0  = 1          # initial x
+xf  = 2          # final x
+n   = 20         # number of iterations of x
+h   = (xf-xi)/n  # step size
+tol = 10**(-5)   # tolerance level
 
-yp=[1]
-ys=0
-y=[]
-ye=1
-x=np.arange(xi,xf+h,h)
+yp = [1]       # first guess of y'
+y0 = 0.5       # y(x0)
+y  = []        # array for values of y, subarrays are for each guess of y'
+yf = 0.33333   # y(xf)
+
+x = np.arange(xi,xf+h,h) # iterate x
 print('x=', x)
 print("")
 
-#######################################################################
-#RK4
+##############################################
+#
+# Runge-Kutta 4th Order
+#
+##############################################
 
-def f(x,y1,y2):
+def f(x,y1,y2):  # first RK4 f(x) for y; RK41
     return y2
 
-def g(x,y1,y2):
-    return -((np.pi)**2)*(y1+1)/4
-    
+def g(x,y1,y2):  # second RK4 f(x) for y'; RK42    
+    return y1**3 - y2*y1
+
+# kn equations are for RK41, while ln equations are for RK42
+
 def k1(x,y1,y2):
     return f(x,y1,y2)
 
@@ -61,47 +67,72 @@ def rk41(x,y1,y2,h):
 def rk42(x,y1,y2,h):
     return y2+(h/6)*(l1(x,y1,y2)+2*l2(x,y1,y2,h)+2*l3(x,y1,y2,h)+l4(x,y1,y2,h))
 
-j=0
-k=0
+j = 0 # dummy for the loop, escape only when 'd' reaches below 'tol'
+k = 0 # iterator for each y'
 
-while j==0:
+while j == 0:
+    
     print("y'=",yp)
-    v1=[]
-    v2=[]
-    v1.append(ys)
-    v2.append(yp[k])
-    for i in range (0,len(x)-1):
-        p=rk41(x[i],v1[i],v2[i],h)
-        m=rk42(x[i],v1[i],v2[i],h)
+    v1=[]             # array for y(x) for given starting guess
+    v2=[]             # array for y'(x) for given starting guess
+    v1.append(y0)     # take in given y(x0)
+    v2.append(yp[k])  # take in k-th value of y'(x)
+    
+    for i in range (0,len(x)-1):   # loop over the values of x
+        
+        p = rk41(x[i],v1[i],v2[i],h) # y(xi)
+        m = rk42(x[i],v1[i],v2[i],h) # y'(xi)
+        
         #g=v1[i]+f1(x[i], v1[i], v2[i])*h #euler's
         #m=v2[i]+f2(x[i], v1[i], v2[i])*h #method
-        v1.append(p)
-        v2.append(m)
-    y.append(v1)
+        
+        v1.append(p) # take in obtained y(xi)
+        v2.append(m) # take in obtained y'(xi)
+        
+    y.append(v1) # take in values of y(y')
 
 
     print('y1=', v1)
     print('y2=', v2)
     print("")
+    
     mpl.plot(x,v1)
 
+##################################################
+#
+# Secant Method to obtain next guess of y'(x)
+# Note: Only if there are two guesses already,
+# otherwise, use another arbitrary guess
+#
+##################################################
 
     if len(yp)>1:
-        z=yp[k-1]+(yp[k]-yp[k-1])*(ye-y[k-1][n])/(y[k][n]-y[k-1][n])
-        yp.append(z)
+        
+        #use secant method such that its y' vs y, not y vs x
+        
+        z = yp[k-1]+(yp[k]-yp[k-1])*(yf-y[k-1][n])/(y[k][n]-y[k-1][n])
+        
+        yp.append(z) # take in new guess for y'
+        
         print("y'=",yp)
         print("y(",xf,")=", y[k][n])
+        
+        # check tolerance
+        
         d=np.abs(y[k][n]-ye)
         print("d=",d)
         print("")
+        
         if d<tol:
             j+=1
     
-   
-    if len(yp)==1:
-        o=yp[k]*2
-        yp.append(o)
+    # arbitrary guess for y', in this case its y'[i] = y[i-1]*2
     
-    k+=1
+    if len(yp)==1:
+        
+        ypNew = yp[k]*0.5
+        yp.append(ypNew)
+    
+    k+=1 # next iteration
 
 mpl.show()
